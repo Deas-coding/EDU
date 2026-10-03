@@ -698,6 +698,67 @@ h2 em{
 }
 
 
+/* =========================================================
+   MEMORY NOTE
+========================================================= */
+
+.memory-note{
+  margin-top:70px;
+
+  background:var(--dark);
+  color:white;
+
+  padding:
+    55px
+    50px;
+
+  border-radius:4px;
+
+  position:relative;
+
+  overflow:hidden;
+}
+
+.memory-note:after{
+  content:"✦";
+
+  position:absolute;
+
+  right:35px;
+  top:10px;
+
+  font-size:130px;
+
+  opacity:.08;
+}
+
+.memory-note p{
+  font-family:
+    'Playfair Display',
+    serif;
+
+  font-size:
+    clamp(25px,4vw,46px);
+
+  line-height:1.15;
+
+  max-width:850px;
+}
+
+.memory-note small{
+  display:block;
+
+  margin-top:22px;
+
+  color:#aaa;
+
+  font-size:11px;
+
+  text-transform:uppercase;
+
+  letter-spacing:.15em;
+}
+
 
 /* =========================================================
    LIVE TIME
@@ -2129,6 +2190,8 @@ footer strong{
 
   
 
+  <div class="memory-note">
+
 </section>
 
 
@@ -3032,8 +3095,6 @@ footer strong{
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
 
 /* =========================================================
@@ -3215,21 +3276,11 @@ document.addEventListener(
 
 
 /* =========================================================
-   SECURE + SHARED SERVER CONTENT — SUPABASE
+   SECURE + PERSISTENT CLASS CONTENT
 ========================================================= */
 
-/*
-  1) Buat project di Supabase.
-  2) Jalankan file supabase_setup.sql yang menyertai website ini.
-  3) Isi URL dan anon key project di bawah.
-  4) Ganti UPLOAD_ACCESS_CODE dengan kode kelasmu.
-*/
-const SUPABASE_URL = 'https://GANTI-PROJECT-ID.supabase.co';
-const SUPABASE_ANON_KEY = 'GANTI-ANON-PUBLIC-KEY';
+/* GANTI kode ini dengan kode rahasia kelasmu. */
 const UPLOAD_ACCESS_CODE = 'PBIEDU18';
-
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const STORAGE_BUCKET = 'class-archive';
 
 const openUpload = document.getElementById('openUpload');
 const photoUpload = document.getElementById('photoUpload');
@@ -3261,37 +3312,54 @@ let editingCard = null;
 let pendingMemberFile = null;
 let authenticated = false;
 let secureAction = '';
-let memberToDelete = null;
+let db;
 
-function serverReady(){
-  return !SUPABASE_URL.includes('GANTI-PROJECT-ID') && !SUPABASE_ANON_KEY.includes('GANTI-ANON-PUBLIC-KEY');
-}
+/* IndexedDB membuat foto/anggota tetap ada setelah refresh dan browser ditutup. */
+const DB_NAME = 'EnglishEducationArchiveDB';
+const DB_VERSION = 1;
 
-function publicImageUrl(path){
-  if(!path) return '';
-  return supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(path).data.publicUrl;
-}
-
-function safeFileName(file){
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
-  return `${Date.now()}_${Math.random().toString(36).slice(2,10)}.${ext || 'jpg'}`;
-}
-
-async function uploadImage(file, folder){
-  const path = `${folder}/${safeFileName(file)}`;
-  const { error } = await supabaseClient.storage.from(STORAGE_BUCKET).upload(path, file, {
-    cacheControl:'3600',
-    upsert:false,
-    contentType:file.type || 'image/jpeg'
+function openDatabase(){
+  return new Promise((resolve,reject)=>{
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = event => {
+      const database = event.target.result;
+      if(!database.objectStoreNames.contains('photos')){
+        database.createObjectStore('photos', {keyPath:'id'});
+      }
+      if(!database.objectStoreNames.contains('members')){
+        database.createObjectStore('members', {keyPath:'id'});
+      }
+    };
+    request.onsuccess = event => { db = event.target.result; resolve(db); };
+    request.onerror = () => reject(request.error);
   });
-  if(error) throw error;
-  return path;
 }
 
-async function deleteStoredImage(path){
-  if(!path) return;
-  const { error } = await supabaseClient.storage.from(STORAGE_BUCKET).remove([path]);
-  if(error) console.warn('Storage delete:', error);
+function idbPut(store, value){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store,'readwrite');
+    tx.objectStore(store).put(value);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function idbDelete(store, id){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store,'readwrite');
+    tx.objectStore(store).delete(id);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function idbGetAll(store){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store,'readonly');
+    const request = tx.objectStore(store).getAll();
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  });
 }
 
 function openCodeModal(action){
@@ -3303,8 +3371,7 @@ function openCodeModal(action){
 }
 
 function closeSecureModal(id){
-  const el = document.getElementById(id);
-  if(el) el.classList.remove('show');
+  document.getElementById(id).classList.remove('show');
 }
 
 document.querySelectorAll('[data-close-secure]').forEach(button=>{
@@ -3312,10 +3379,6 @@ document.querySelectorAll('[data-close-secure]').forEach(button=>{
 });
 
 openUpload.addEventListener('click',()=>{
-  if(!serverReady()){
-    showUploadToast('Hubungkan Supabase terlebih dahulu.');
-    return;
-  }
   authenticated = false;
   editingCard = null;
   pendingFile = null;
@@ -3323,10 +3386,6 @@ openUpload.addEventListener('click',()=>{
 });
 
 openMemberUpload.addEventListener('click',()=>{
-  if(!serverReady()){
-    showUploadToast('Hubungkan Supabase terlebih dahulu.');
-    return;
-  }
   authenticated = false;
   openCodeModal('add-member');
 });
@@ -3334,6 +3393,7 @@ openMemberUpload.addEventListener('click',()=>{
 codeForm.addEventListener('submit',event=>{
   event.preventDefault();
   const enteredCode = uploadCode.value.trim();
+
   if(enteredCode !== UPLOAD_ACCESS_CODE || !enteredCode){
     codeError.textContent = 'Kode salah. Silakan coba lagi.';
     uploadCode.select();
@@ -3398,10 +3458,14 @@ photoDetailsForm.addEventListener('submit',async event=>{
     if(editingCard){
       const id = editingCard.dataset.localId;
       if(id){
-        const { error } = await supabaseClient.from('class_photos').update({
-          title, caption, chapter
-        }).eq('id', id);
-        if(error) throw error;
+        const photos = await idbGetAll('photos');
+        const saved = photos.find(p=>p.id === id);
+        if(saved){
+          saved.title = title;
+          saved.caption = caption;
+          saved.chapter = chapter;
+          await idbPut('photos',saved);
+        }
       }
 
       editingCard.dataset.title = title;
@@ -3413,33 +3477,69 @@ photoDetailsForm.addEventListener('submit',async event=>{
       editingCard.querySelector('img').alt = title;
 
       closeSecureModal('photoDetailsModal');
-      showUploadToast('Detail foto berhasil disimpan di server.');
+      showUploadToast('Detail foto berhasil disimpan.');
       editingCard = null;
       authenticated = false;
       return;
     }
 
     if(!pendingFile) return;
-    showUploadToast('Mengunggah foto...');
-    const imagePath = await uploadImage(pendingFile,'photos');
-    const { data, error } = await supabaseClient.from('class_photos').insert({
-      title, caption, chapter, image_path:imagePath
-    }).select().single();
-    if(error){
-      await deleteStoredImage(imagePath);
-      throw error;
-    }
+    const dataUrl = await fileToDataURL(pendingFile);
+    const id = 'photo_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
 
-    renderSavedPhoto({...data, dataUrl:publicImageUrl(data.image_path)});
+    await idbPut('photos',{id,title,caption,chapter,dataUrl,createdAt:Date.now()});
+    renderSavedPhoto({id,title,caption,chapter,dataUrl});
+
     closeSecureModal('photoDetailsModal');
-    showUploadToast('Foto berhasil disimpan. Sekarang terlihat di semua HP.');
+    showUploadToast('Foto berhasil disimpan di web ini.');
     pendingFile = null;
     authenticated = false;
   }catch(error){
     console.error(error);
-    showUploadToast('Gagal menyimpan foto ke server. Cek koneksi/Supabase.');
+    showUploadToast('Gagal menyimpan. Coba lagi.');
   }
 });
+
+function fileToDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = ()=>reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+function addCardActions(card){
+  if(card.querySelector('.card-actions')) return;
+  const info = card.querySelector('.card-info');
+  if(!info) return;
+  const textWrap = info.querySelector(':scope > div');
+  if(!textWrap) return;
+
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
+
+  const editButton = document.createElement('button');
+  editButton.type='button';
+  editButton.className='card-edit';
+  editButton.textContent='Edit';
+  editButton.addEventListener('click',event=>{
+    event.stopPropagation();
+    requestEdit(card);
+  });
+
+  const deleteButton = document.createElement('button');
+  deleteButton.type='button';
+  deleteButton.className='card-delete';
+  deleteButton.textContent='Hapus';
+  deleteButton.addEventListener('click',event=>{
+    event.stopPropagation();
+    requestDeletePhoto(card);
+  });
+
+  actions.append(editButton,deleteButton);
+  textWrap.appendChild(actions);
+}
 
 function renderSavedPhoto(photo){
   const article = document.createElement('article');
@@ -3448,12 +3548,11 @@ function renderSavedPhoto(photo){
   article.dataset.title=photo.title;
   article.dataset.caption=photo.caption;
   article.dataset.localId=photo.id;
-  article.dataset.imagePath=photo.image_path || '';
+  article.innerHTML='';
 
   const img=document.createElement('img');
-  img.src=photo.dataUrl || publicImageUrl(photo.image_path);
+  img.src=photo.dataUrl;
   img.alt=photo.title;
-  img.loading='lazy';
 
   const info=document.createElement('div');
   info.className='card-info';
@@ -3507,25 +3606,17 @@ async function deletePhotoAfterCode(){
   if(!editingCard) return;
   const id=editingCard.dataset.localId;
   if(!id){
-    showUploadToast('Foto bawaan website tidak memiliki data server untuk dihapus.');
+    showUploadToast('Foto bawaan website tidak dapat dihapus dari penyimpanan lokal.');
     editingCard=null;
     authenticated=false;
     return;
   }
-  if(!confirm('Hapus foto ini dari galeri untuk semua orang?')) return;
-  try{
-    const path=editingCard.dataset.imagePath;
-    const { error } = await supabaseClient.from('class_photos').delete().eq('id',id);
-    if(error) throw error;
-    await deleteStoredImage(path);
-    editingCard.remove();
-    showUploadToast('Foto dihapus dari server untuk semua orang.');
-  }catch(error){
-    console.error(error);
-    showUploadToast('Gagal menghapus foto dari server.');
-  }
+  if(!confirm('Hapus foto ini dari galeri?')) return;
+  await idbDelete('photos',id);
+  editingCard.remove();
   editingCard=null;
   authenticated=false;
+  showUploadToast('Foto berhasil dihapus.');
 }
 
 /* ---------------- MEMBERS ---------------- */
@@ -3550,14 +3641,12 @@ function renderSavedMember(member){
   const card=document.createElement('div');
   card.className='member';
   card.dataset.localId=member.id;
-  card.dataset.imagePath=member.image_path || '';
 
   const photo=document.createElement('div');
   photo.className='member-photo';
   const img=document.createElement('img');
-  img.src=member.dataUrl || publicImageUrl(member.image_path);
+  img.src=member.dataUrl;
   img.alt=member.name;
-  img.loading='lazy';
   photo.appendChild(img);
 
   const info=document.createElement('div');
@@ -3576,15 +3665,11 @@ function renderSavedMember(member){
 
 memberPhotoInput.addEventListener('change',()=>{
   const file=memberPhotoInput.files[0];
-  if(!file) return;
-  if(!file.type.startsWith('image/')){
-    showUploadToast('Foto anggota harus berupa gambar.');
-    memberPhotoInput.value='';
-    return;
+  pendingMemberFile=file || null;
+  if(file){
+    memberPreview.src=URL.createObjectURL(file);
+    memberPreview.classList.add('show');
   }
-  pendingMemberFile=file;
-  memberPreview.src=URL.createObjectURL(file);
-  memberPreview.classList.add('show');
 });
 
 memberDetailsForm.addEventListener('submit',async event=>{
@@ -3596,28 +3681,22 @@ memberDetailsForm.addEventListener('submit',async event=>{
   if(!name || !role) return;
 
   try{
-    showUploadToast('Mengunggah anggota...');
-    const imagePath=await uploadImage(pendingMemberFile,'members');
-    const { data, error } = await supabaseClient.from('class_members').insert({
-      name, role, image_path:imagePath
-    }).select().single();
-    if(error){
-      await deleteStoredImage(imagePath);
-      throw error;
-    }
-
-    renderSavedMember({...data,dataUrl:publicImageUrl(data.image_path)});
+    const dataUrl=await fileToDataURL(pendingMemberFile);
+    const id='member_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+    const member={id,name,role,dataUrl,createdAt:Date.now()};
+    await idbPut('members',member);
+    renderSavedMember(member);
     closeSecureModal('memberDetailsModal');
-    showUploadToast('Anggota berhasil ditambahkan untuk semua orang.');
+    showUploadToast('Anggota berhasil ditambahkan.');
     pendingMemberFile=null;
-    memberPhotoInput.value='';
     authenticated=false;
   }catch(error){
     console.error(error);
-    showUploadToast('Gagal menambahkan anggota ke server.');
+    showUploadToast('Gagal menyimpan anggota.');
   }
 });
 
+let memberToDelete=null;
 function requestDeleteMember(card,id){
   memberToDelete={card,id};
   authenticated=false;
@@ -3626,94 +3705,42 @@ function requestDeleteMember(card,id){
 
 async function deleteMemberAfterCode(){
   if(!memberToDelete) return;
-  if(!confirm('Hapus anggota ini dari daftar kelas untuk semua orang?')) return;
-  try{
-    const path=memberToDelete.card.dataset.imagePath;
-    const { error } = await supabaseClient.from('class_members').delete().eq('id',memberToDelete.id);
-    if(error) throw error;
-    await deleteStoredImage(path);
-    memberToDelete.card.remove();
-    showUploadToast('Anggota berhasil dihapus dari server.');
-  }catch(error){
-    console.error(error);
-    showUploadToast('Gagal menghapus anggota dari server.');
-  }
+  if(!confirm('Hapus anggota ini dari daftar kelas?')) return;
+  await idbDelete('members',memberToDelete.id);
+  memberToDelete.card.remove();
   memberToDelete=null;
   authenticated=false;
+  showUploadToast('Anggota berhasil dihapus.');
 }
 
 function showUploadToast(message){
   uploadToast.textContent=message;
   uploadToast.classList.add('show');
-  setTimeout(()=>uploadToast.classList.remove('show'),3000);
+  setTimeout(()=>uploadToast.classList.remove('show'),2500);
 }
 
 async function loadPersistentContent(){
-  if(!serverReady()){
-    console.warn('Supabase belum dikonfigurasi.');
-    return;
-  }
   try{
-    const [{data:photos,error:photoError},{data:members,error:memberError}] = await Promise.all([
-      supabaseClient.from('class_photos').select('*').order('created_at',{ascending:true}),
-      supabaseClient.from('class_members').select('*').order('created_at',{ascending:true})
-    ]);
-    if(photoError) throw photoError;
-    if(memberError) throw memberError;
+    await openDatabase();
+    const photos=await idbGetAll('photos');
+    photos.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+    photos.forEach(renderSavedPhoto);
 
-    photos.forEach(photo=>renderSavedPhoto({...photo,dataUrl:publicImageUrl(photo.image_path)}));
-    members.forEach(member=>renderSavedMember({...member,dataUrl:publicImageUrl(member.image_path)}));
+    const members=await idbGetAll('members');
+    members.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+    members.forEach(renderSavedMember);
+
     refreshCards().forEach(addCardActions);
   }catch(error){
-    console.error('Supabase:',error);
-    showUploadToast('Data server belum bisa dimuat.');
+    console.error('IndexedDB:',error);
+    showUploadToast('Penyimpanan browser tidak tersedia.');
   }
-}
-
-/* Sinkronisasi realtime: browser lain menerima penambahan/perubahan/penghapusan. */
-function subscribeRealtime(){
-  if(!serverReady()) return;
-
-  supabaseClient
-    .channel('class-archive-live')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'class_photos'},payload=>{
-      if(document.querySelector(`.card[data-local-id="${payload.new.id}"]`)) return;
-      renderSavedPhoto({...payload.new,dataUrl:publicImageUrl(payload.new.image_path)});
-    })
-    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'class_photos'},payload=>{
-      const card=document.querySelector(`.card[data-local-id="${payload.new.id}"]`);
-      if(!card) return;
-      card.dataset.title=payload.new.title;
-      card.dataset.caption=payload.new.caption;
-      card.dataset.year=payload.new.chapter;
-      card.dataset.imagePath=payload.new.image_path || '';
-      const title=card.querySelector('.card-title');
-      const caption=card.querySelector('.card-caption');
-      const date=card.querySelector('.card-date');
-      const img=card.querySelector('img');
-      if(title) title.textContent=payload.new.title;
-      if(caption) caption.textContent=payload.new.caption;
-      if(date) date.textContent=payload.new.chapter==='event'?'EVENT':payload.new.chapter;
-      if(img){img.alt=payload.new.title;img.src=publicImageUrl(payload.new.image_path);}
-    })
-    .on('postgres_changes',{event:'DELETE',schema:'public',table:'class_photos'},payload=>{
-      const card=document.querySelector(`.card[data-local-id="${payload.old.id}"]`);
-      if(card) card.remove();
-    })
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'class_members'},payload=>{
-      if(document.querySelector(`.member[data-local-id="${payload.new.id}"]`)) return;
-      renderSavedMember({...payload.new,dataUrl:publicImageUrl(payload.new.image_path)});
-    })
-    .on('postgres_changes',{event:'DELETE',schema:'public',table:'class_members'},payload=>{
-      const card=document.querySelector(`.member[data-local-id="${payload.old.id}"]`);
-      if(card) card.remove();
-    })
-    .subscribe();
 }
 
 /* Kartu bawaan tetap bisa diedit, tetapi edit/hapus selalu minta kode. */
 refreshCards().forEach(addCardActions);
-loadPersistentContent().then(subscribeRealtime);
+loadPersistentContent();
+
 
 /* =========================================================
    LIVE CLOCK
