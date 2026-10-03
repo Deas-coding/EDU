@@ -363,6 +363,24 @@ h1 em{
   font-size:18px;
 }
 
+/* =========================================================
+   HERO LIVE CLOCK
+========================================================= */
+.hero-clock{position:absolute;top:108px;right:max(24px,calc((100% - 1150px)/2));width:178px;min-height:112px;padding:16px 17px 14px;border:1px solid rgba(123,143,104,.28);border-radius:22px;background:rgba(255,253,248,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 45px rgba(31,31,26,.10);overflow:hidden;z-index:20;animation:clockFloat 4s ease-in-out infinite}
+.hero-clock:before{content:"";position:absolute;width:90px;height:90px;right:-42px;top:-45px;border:1px solid rgba(123,143,104,.25);border-radius:50%;animation:clockOrbit 7s linear infinite}
+.hero-clock-orbit{position:absolute;width:8px;height:8px;right:24px;top:18px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px rgba(123,143,104,.10);animation:clockPulse 1.5s ease-in-out infinite}
+.hero-clock-top{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:8px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:9px}
+.hero-clock-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:clockPulse 1.5s ease-in-out infinite}
+.hero-clock-time{font-variant-numeric:tabular-nums;font-size:27px;line-height:1;letter-spacing:-.055em;font-weight:700}
+.hero-clock-date{margin-top:8px;color:var(--muted);font-size:9px;line-height:1.4;white-space:nowrap}
+.hero-clock-line{display:flex;align-items:center;gap:5px;margin-top:12px}.hero-clock-line span{height:1px;flex:1;background:var(--line)}.hero-clock-line i{width:4px;height:4px;border-radius:50%;background:var(--accent2);animation:clockPulse 1s ease-in-out infinite}
+@keyframes clockFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-5px) rotate(.5deg)}}
+@keyframes clockPulse{0%,100%{transform:scale(.8);opacity:.55}50%{transform:scale(1.35);opacity:1}}
+@keyframes clockOrbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@media(max-width:850px){.hero-clock{top:102px;right:18px;width:160px;min-height:104px}.hero-clock-time{font-size:23px}}
+@media(max-width:760px){.hero-clock{top:92px;right:16px;width:145px;min-height:92px;padding:12px 13px 11px;border-radius:18px}.hero-clock-top{font-size:7px;margin-bottom:7px}.hero-clock-time{font-size:20px}.hero-clock-date{font-size:8px;white-space:normal;max-width:115px}.hero-clock-line{margin-top:8px}}
+@media(prefers-reduced-motion:reduce){.hero-clock,.hero-clock-orbit,.hero-clock-dot,.hero-clock-line i,.hero-clock:before{animation:none}}
+
 .scroll-note{
   position:absolute;
 
@@ -1757,6 +1775,21 @@ footer strong{
 }
 
 /* =========================================================
+   PERSISTENT CLASS CONTENT CONTROLS
+========================================================= */
+.add-photo-card,.add-member-card{border:1px dashed var(--line);background:rgba(255,255,255,.45);color:var(--ink);cursor:pointer;font:inherit}
+.add-photo-card{min-height:280px;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px;transition:.3s}
+.add-photo-card:hover,.add-member-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-style:solid}
+.card-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.card-edit,.card-delete,.member-delete{border:1px solid var(--line);background:rgba(255,255,255,.8);color:var(--ink);padding:5px 8px;border-radius:999px;font-size:9px;cursor:pointer}
+.card-delete,.member-delete{color:#9a4f4f}
+.card-edit:hover,.card-delete:hover,.member-delete:hover{background:var(--paper)}
+.add-member-card{position:relative;min-height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:20px}
+.member-plus{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:28px;margin-bottom:5px}
+.add-member-card small{color:var(--muted);font-size:10px}
+.member-delete-wrap{position:absolute;right:9px;top:9px;z-index:3}
+
+/* =========================================================
    MOBILE
 ========================================================= */
 
@@ -1844,16 +1877,6 @@ footer strong{
 
   .member{
     padding:7px;
-  }
-
-  .time-section{
-    padding:
-      70px
-      18px;
-  }
-
-  .time-card{
-    padding:25px;
   }
 
   .video-caption{
@@ -2021,6 +2044,16 @@ footer strong{
   </div>
 
 
+  <!-- LIVE CLOCK — HERO -->
+  <div class="hero-clock" aria-label="Jam dan tanggal saat ini">
+    <div class="hero-clock-orbit"></div>
+    <div class="hero-clock-top"><span class="hero-clock-dot"></span><span>LIVE MOMENT</span></div>
+    <div class="hero-clock-time" id="liveTime">00:00:00</div>
+    <div class="hero-clock-date" id="liveDate">Loading...</div>
+    <div class="hero-clock-line"><span></span><i></i><span></span></div>
+  </div>
+
+
   <div class="scroll-note">
     scroll to remember ↓
   </div>
@@ -2155,6 +2188,289 @@ footer strong{
       hidden>
 
 
+    <!-- PHOTO 1 -->
+
+    <article
+      class="card"
+      data-year="XII"
+      data-title="Hari terakhir sekolah"
+      data-caption="Akhir dari satu rutinitas, awal dari banyak cerita.">
+
+      <img
+        src="GAMBAR/A4.jpg"
+        alt="Hari terakhir sekolah">
+
+      <div class="card-info">
+
+        <div>
+
+          <div class="card-title">
+            Hari terakhir sekolah
+          </div>
+
+          <div class="card-caption">
+            Akhir dari satu rutinitas, awal dari banyak cerita.
+          </div>
+
+        </div>
+
+        <span class="card-date">
+          XII
+        </span>
+
+      </div>
+
+    </article>
+
+
+    <!-- PHOTO 2 -->
+
+    <article
+      class="card"
+      data-year="X"
+      data-title="First day"
+      data-caption="Masih malu-malu, belum tahu bakal sejauh apa.">
+
+      <img
+        src="GAMBAR/A3.jpg"
+        alt="First day">
+
+      <div class="card-info">
+
+        <div>
+
+          <div class="card-title">
+            First day
+          </div>
+
+          <div class="card-caption">
+            Masih malu-malu, belum tahu bakal sejauh apa.
+          </div>
+
+        </div>
+
+        <span class="card-date">
+          X
+        </span>
+
+      </div>
+
+    </article>
+
+
+    <!-- PHOTO 3 -->
+
+    <article
+      class="card"
+      data-year="event"
+      data-title="Class trip"
+      data-caption="Satu perjalanan yang akhirnya jadi bahan cerita bertahun-tahun.">
+
+      <img
+        src="GAMBAR/A6.jpg"
+        alt="Class trip">
+
+      <div class="card-info">
+
+        <div>
+
+          <div class="card-title">
+            Class trip
+          </div>
+
+          <div class="card-caption">
+            Satu perjalanan yang akhirnya jadi bahan cerita bertahun-tahun.
+          </div>
+
+        </div>
+
+        <span class="card-date">
+          EVENT
+        </span>
+
+      </div>
+
+    </article>
+
+
+    <!-- PHOTO 4 -->
+
+    <article
+      class="card"
+      data-year="XI"
+      data-title="Random Tuesday"
+      data-caption="Nggak ada acara spesial. Justru itu yang bikin kangen.">
+
+      <img
+        src="GAMBAR/A5.jpg"
+        alt="Friends">
+
+      <div class="card-info">
+
+        <div>
+
+          <div class="card-title">
+            Random Tuesday
+          </div>
+
+          <div class="card-caption">
+            Nggak ada acara spesial. Justru itu yang bikin kangen.
+          </div>
+
+        </div>
+
+        <span class="card-date">
+          XI
+        </span>
+
+      </div>
+
+    </article>
+
+
+    <!-- PHOTO 5 -->
+
+    <article
+      class="card"
+      data-year="event"
+      data-title="School event"
+      data-caption="Ramai, capek, chaotic — tapi seru.">
+
+      <img
+        src="GAMBAR/A7.jpg"
+        alt="School event">
+
+      <div class="card-info">
+
+        <div>
+
+          <div class="card-title">
+            School event
+          </div>
+
+          <div class="card-caption">
+            Ramai, capek, chaotic — tapi seru.
+          </div>
+
+        </div>
+
+        <span class="card-date">
+          EVENT
+        </span>
+
+      </div>
+
+    </article>
+
+
+    <!-- PHOTO 6 -->
+
+    <article
+      class="card"
+      data-year="XII"
+      data-title="The squad"
+      data-caption="Orang-orang yang membuat sekolah terasa seperti rumah kedua.">
+
+      <img
+        src="GAMBAR/A3.jpg"
+        alt="The squad">
+
+      <div class="card-info">
+
+        <div>
+
+          <div class="card-title">
+            The squad
+          </div>
+
+          <div class="card-caption">
+            Orang-orang yang membuat sekolah terasa seperti rumah kedua.
+          </div>
+
+        </div>
+
+        <span class="card-date">
+          XII
+        </span>
+
+      </div>
+
+    </article>
+
+
+    <!-- PHOTO 7 -->
+
+    <article
+      class="card"
+      data-year="XI"
+      data-title="After class"
+      data-caption="Bel pulang bukan berarti obrolan selesai.">
+
+      <img
+        src="GAMBAR/A4.jpg"
+        alt="After class">
+
+      <div class="card-info">
+
+        <div>
+
+          <div class="card-title">
+            After class
+          </div>
+
+          <div class="card-caption">
+            Bel pulang bukan berarti obrolan selesai.
+          </div>
+
+        </div>
+
+        <span class="card-date">
+          XI
+        </span>
+
+      </div>
+
+    </article>
+
+
+    <!-- PHOTO 8 -->
+
+    <article
+      class="card"
+      data-year="X"
+      data-title="New friends"
+      data-caption="Beberapa orang datang sebagai teman sekelas, lalu menjadi bagian cerita.">
+
+      <img
+        src="GAMBAR/A 11.jpg"
+        alt="New friends">
+
+      <div class="card-info">
+
+        <div>
+
+          <div class="card-title">
+            New friends
+          </div>
+
+          <div class="card-caption">
+            Beberapa orang datang sebagai teman sekelas,
+            lalu menjadi bagian cerita.
+          </div>
+
+        </div>
+
+        <span class="card-date">
+          X
+        </span>
+
+      </div>
+
+    </article>
+
+
+  </div>
+
 
   <div class="memory-note">
 
@@ -2176,60 +2492,7 @@ footer strong{
 
 
 
-<!-- =========================================================
-     LIVE TIME
-========================================================= -->
 
-<section class="time-section">
-
-  <div class="time-container">
-
-    <div>
-
-      <div class="time-label">
-        live moment
-      </div>
-
-      <div
-        class="live-time"
-        id="liveTime">
-
-        00:00:00
-
-      </div>
-
-      <div
-        class="live-date"
-        id="liveDate">
-
-        Loading...
-
-      </div>
-
-    </div>
-
-
-    <div class="time-card">
-
-      <div class="time-card-title">
-        Right now.
-      </div>
-
-      <p>
-
-        Waktu terus berjalan.
-        Mungkin suatu hari nanti kita akan membuka
-        website ini lagi dan menyadari bahwa momen
-        yang dulu terasa biasa ternyata adalah
-        bagian dari cerita yang paling dirindukan.
-
-      </p>
-
-    </div>
-
-  </div>
-
-</section>
 
 
 
@@ -2343,8 +2606,13 @@ footer strong{
   </div>
 
 
-  <div class="member-grid">
+  <div class="member-grid" id="memberGrid">
 
+    <button class="add-member-card" id="openMemberUpload" type="button">
+      <span class="member-plus">+</span>
+      <strong>Tambah anggota</strong>
+      <small>Wajib kode khusus</small>
+    </button>
 
     <!-- MEMBER 1 -->
 
@@ -3015,6 +3283,29 @@ footer strong{
 
 
 <!-- =========================================================
+     MEMBER MODAL
+========================================================= -->
+
+<div class="secure-modal" id="memberDetailsModal">
+  <div class="secure-box">
+    <button class="secure-close" type="button" data-close-secure="memberDetailsModal">×</button>
+    <div class="secure-kicker">class member</div>
+    <h3>Tambah anggota kelas.</h3>
+    <p>Isi nama, peran, dan foto anggota.</p>
+    <img class="upload-preview" id="memberPreview" alt="Preview anggota">
+    <form class="secure-form" id="memberDetailsForm">
+      <input type="text" id="memberNameInput" maxlength="60" placeholder="Nama anggota" required>
+      <input type="text" id="memberRoleInput" maxlength="40" placeholder="Peran / keterangan" value="Classmate" required>
+      <input type="file" id="memberPhotoInput" accept="image/*" required>
+      <div class="secure-actions">
+        <button class="secure-secondary" type="button" data-close-secure="memberDetailsModal">Batal</button>
+        <button class="secure-primary" type="submit">Tambah anggota →</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- =========================================================
      IMAGE MODAL
 ========================================================= -->
 
@@ -3281,576 +3572,470 @@ document.addEventListener(
 
 
 /* =========================================================
-   SECURE ADD / EDIT PHOTO
+   SECURE + PERSISTENT CLASS CONTENT
 ========================================================= */
 
-/*
-  GANTI nilai ini dengan kode rahasia milikmu.
-  Contoh:
-  const UPLOAD_ACCESS_CODE = 'KODE-KELAS-2026';
-*/
-const UPLOAD_ACCESS_CODE = 'PBIEDU';
+/* GANTI kode ini dengan kode rahasia kelasmu. */
+const UPLOAD_ACCESS_CODE = 'GANTI_KODE_RAHASIA';
 
-const openUpload =
-  document.getElementById('openUpload');
+const openUpload = document.getElementById('openUpload');
+const photoUpload = document.getElementById('photoUpload');
+const codeModal = document.getElementById('codeModal');
+const codeForm = document.getElementById('codeForm');
+const uploadCode = document.getElementById('uploadCode');
+const codeError = document.getElementById('codeError');
+const photoDetailsModal = document.getElementById('photoDetailsModal');
+const photoDetailsForm = document.getElementById('photoDetailsForm');
+const uploadPreview = document.getElementById('uploadPreview');
+const photoTitle = document.getElementById('photoTitle');
+const photoCaption = document.getElementById('photoCaption');
+const photoChapter = document.getElementById('photoChapter');
+const photoDetailsHeading = document.getElementById('photoDetailsHeading');
+const savePhotoDetails = document.getElementById('savePhotoDetails');
+const uploadToast = document.getElementById('uploadToast');
 
-const photoUpload =
-  document.getElementById('photoUpload');
-
-const codeModal =
-  document.getElementById('codeModal');
-
-const codeForm =
-  document.getElementById('codeForm');
-
-const uploadCode =
-  document.getElementById('uploadCode');
-
-const codeError =
-  document.getElementById('codeError');
-
-const photoDetailsModal =
-  document.getElementById('photoDetailsModal');
-
-const photoDetailsForm =
-  document.getElementById('photoDetailsForm');
-
-const uploadPreview =
-  document.getElementById('uploadPreview');
-
-const photoTitle =
-  document.getElementById('photoTitle');
-
-const photoCaption =
-  document.getElementById('photoCaption');
-
-const photoChapter =
-  document.getElementById('photoChapter');
-
-const photoDetailsHeading =
-  document.getElementById('photoDetailsHeading');
-
-const savePhotoDetails =
-  document.getElementById('savePhotoDetails');
-
-const uploadToast =
-  document.getElementById('uploadToast');
+const openMemberUpload = document.getElementById('openMemberUpload');
+const memberDetailsModal = document.getElementById('memberDetailsModal');
+const memberDetailsForm = document.getElementById('memberDetailsForm');
+const memberPhotoInput = document.getElementById('memberPhotoInput');
+const memberPreview = document.getElementById('memberPreview');
+const memberNameInput = document.getElementById('memberNameInput');
+const memberRoleInput = document.getElementById('memberRoleInput');
+const memberGrid = document.getElementById('memberGrid');
 
 let pendingFile = null;
 let editingCard = null;
+let pendingMemberFile = null;
 let authenticated = false;
+let secureAction = '';
+let db;
 
+/* IndexedDB membuat foto/anggota tetap ada setelah refresh dan browser ditutup. */
+const DB_NAME = 'EnglishEducationArchiveDB';
+const DB_VERSION = 1;
 
-function openCodeModal(){
+function openDatabase(){
+  return new Promise((resolve,reject)=>{
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = event => {
+      const database = event.target.result;
+      if(!database.objectStoreNames.contains('photos')){
+        database.createObjectStore('photos', {keyPath:'id'});
+      }
+      if(!database.objectStoreNames.contains('members')){
+        database.createObjectStore('members', {keyPath:'id'});
+      }
+    };
+    request.onsuccess = event => { db = event.target.result; resolve(db); };
+    request.onerror = () => reject(request.error);
+  });
+}
 
+function idbPut(store, value){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store,'readwrite');
+    tx.objectStore(store).put(value);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function idbDelete(store, id){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store,'readwrite');
+    tx.objectStore(store).delete(id);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function idbGetAll(store){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store,'readonly');
+    const request = tx.objectStore(store).getAll();
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function openCodeModal(action){
+  secureAction = action;
   codeError.textContent = '';
   uploadCode.value = '';
   codeModal.classList.add('show');
-
-  setTimeout(() => {
-    uploadCode.focus();
-  }, 80);
-
+  setTimeout(()=>uploadCode.focus(),80);
 }
-
 
 function closeSecureModal(id){
-
-  document
-    .getElementById(id)
-    .classList.remove('show');
-
+  document.getElementById(id).classList.remove('show');
 }
 
-
-document.querySelectorAll('[data-close-secure]').forEach(button => {
-
-  button.addEventListener('click', () => {
-
-    closeSecureModal(
-      button.dataset.closeSecure
-    );
-
-  });
-
+document.querySelectorAll('[data-close-secure]').forEach(button=>{
+  button.addEventListener('click',()=>closeSecureModal(button.dataset.closeSecure));
 });
 
-
-openUpload.addEventListener('click', () => {
-
-  /*
-    Setiap kali tombol + ditekan, pengguna tetap
-    diminta kode. Jadi akses tidak dibiarkan terbuka.
-  */
+openUpload.addEventListener('click',()=>{
   authenticated = false;
   editingCard = null;
-  codeForm.dataset.mode = '';
-  openCodeModal();
-
+  pendingFile = null;
+  openCodeModal('add-photo');
 });
 
+openMemberUpload.addEventListener('click',()=>{
+  authenticated = false;
+  openCodeModal('add-member');
+});
 
-codeForm.addEventListener('submit', event => {
-
-  if(codeForm.dataset.mode === 'edit'){
-    return;
-  }
-
+codeForm.addEventListener('submit',event=>{
   event.preventDefault();
+  const enteredCode = uploadCode.value.trim();
 
-  const enteredCode =
-    uploadCode.value.trim();
-
-
-  if(
-    enteredCode &&
-    enteredCode === UPLOAD_ACCESS_CODE
-  ){
-
-    authenticated = true;
-
-    codeError.textContent = '';
-
-    codeModal.classList.remove('show');
-
-    photoUpload.click();
-
-  }
-
-  else{
-
-    codeError.textContent =
-      'Kode salah. Silakan coba lagi.';
-
+  if(enteredCode !== UPLOAD_ACCESS_CODE || !enteredCode){
+    codeError.textContent = 'Kode salah. Silakan coba lagi.';
     uploadCode.select();
-
+    return;
   }
 
+  authenticated = true;
+  codeError.textContent = '';
+  codeModal.classList.remove('show');
+
+  if(secureAction === 'add-photo'){
+    photoUpload.click();
+  }else if(secureAction === 'add-member'){
+    memberDetailsForm.reset();
+    memberRoleInput.value = 'Classmate';
+    memberPreview.classList.remove('show');
+    pendingMemberFile = null;
+    memberDetailsModal.classList.add('show');
+  }else if(secureAction === 'edit-photo'){
+    preparePhotoEdit();
+  }else if(secureAction === 'delete-photo'){
+    deletePhotoAfterCode();
+  }else if(secureAction === 'delete-member'){
+    deleteMemberAfterCode();
+  }
 });
 
-
-photoUpload.addEventListener('change', function(){
-
-  if(!authenticated){
-    this.value = '';
-    return;
-  }
-
-
-  const file =
-    this.files[0];
-
-
-  if(!file){
-    return;
-  }
-
-
+photoUpload.addEventListener('change',function(){
+  if(!authenticated){ this.value=''; return; }
+  const file = this.files[0];
+  if(!file) return;
   if(!file.type.startsWith('image/')){
-
-    showUploadToast(
-      'File harus berupa gambar.'
-    );
-
-    this.value = '';
+    showUploadToast('File harus berupa gambar.');
+    this.value='';
     return;
-
   }
-
 
   pendingFile = file;
   editingCard = null;
-
-
-  uploadPreview.src =
-    URL.createObjectURL(file);
-
+  uploadPreview.src = URL.createObjectURL(file);
   uploadPreview.classList.add('show');
-
-
-  photoDetailsHeading.textContent =
-    'Atur detail foto.';
-
-  savePhotoDetails.textContent =
-    'Tambahkan foto →';
-
-  photoTitle.value =
-    file.name
-      .replace(/\.[^/.]+$/, '')
-      .slice(0,80);
-
-  photoCaption.value =
-    'Kenangan yang baru ditambahkan.';
-
-  photoChapter.value =
-    'event';
-
-
+  photoDetailsHeading.textContent = 'Atur detail foto.';
+  savePhotoDetails.textContent = 'Tambahkan foto →';
+  photoTitle.value = file.name.replace(/\.[^/.]+$/,'').slice(0,80);
+  photoCaption.value = 'Kenangan yang baru ditambahkan.';
+  photoChapter.value = 'event';
   photoDetailsModal.classList.add('show');
-
-
-  setTimeout(() => {
-    photoTitle.focus();
-    photoTitle.select();
-  }, 80);
-
-
-  this.value = '';
-
+  setTimeout(()=>{photoTitle.focus();photoTitle.select();},80);
+  this.value='';
 });
 
-
-photoDetailsForm.addEventListener('submit', event => {
-
+photoDetailsForm.addEventListener('submit',async event=>{
   event.preventDefault();
-
-
-  if(!authenticated){
-    return;
-  }
-
-
-  const title =
-    photoTitle.value.trim();
-
-  const caption =
-    photoCaption.value.trim();
-
-  const chapter =
-    photoChapter.value;
-
-
-  if(!title || !caption){
-    return;
-  }
-
-
-  if(editingCard){
-
-    editingCard.dataset.title =
-      title;
-
-    editingCard.dataset.caption =
-      caption;
-
-    editingCard.dataset.year =
-      chapter;
-
-
-    editingCard.querySelector(
-      '.card-title'
-    ).textContent =
-      title;
-
-
-    editingCard.querySelector(
-      '.card-caption'
-    ).textContent =
-      caption;
-
-
-    editingCard.querySelector(
-      '.card-date'
-    ).textContent =
-      chapter === 'event'
-        ? 'EVENT'
-        : chapter;
-
-
-    closeSecureModal(
-      'photoDetailsModal'
-    );
-
-
-    showUploadToast(
-      'Detail foto berhasil diperbarui.'
-    );
-
-
-    editingCard = null;
-    pendingFile = null;
-
-    authenticated = false;
-
-    return;
-
-  }
-
-
-  if(!pendingFile){
-    return;
-  }
-
-
-  const reader =
-    new FileReader();
-
-
-  reader.onload =
-    function(e){
-
-      const article =
-        document.createElement('article');
-
-
-      article.className =
-        'card';
-
-
-      article.dataset.year =
-        chapter;
-
-
-      article.dataset.title =
-        title;
-
-
-      article.dataset.caption =
-        caption;
-
-
-      const img =
-        document.createElement('img');
-
-      img.src =
-        e.target.result;
-
-      img.alt =
-        title;
-
-
-      const info =
-        document.createElement('div');
-
-      info.className =
-        'card-info';
-
-
-      const textWrap =
-        document.createElement('div');
-
-
-      const titleEl =
-        document.createElement('div');
-
-      titleEl.className =
-        'card-title';
-
-      titleEl.textContent =
-        title;
-
-
-      const captionEl =
-        document.createElement('div');
-
-      captionEl.className =
-        'card-caption';
-
-      captionEl.textContent =
-        caption;
-
-
-      const actions =
-        document.createElement('div');
-
-      actions.className =
-        'card-actions';
-
-
-      const editButton =
-        document.createElement('button');
-
-      editButton.type =
-        'button';
-
-      editButton.className =
-        'card-edit';
-
-      editButton.textContent =
-        'Edit title & caption';
-
-
-      editButton.addEventListener(
-        'click',
-        event => {
-
-          event.stopPropagation();
-
-          requestEdit(article);
-
+  if(!authenticated) return;
+
+  const title = photoTitle.value.trim();
+  const caption = photoCaption.value.trim();
+  const chapter = photoChapter.value;
+  if(!title || !caption) return;
+
+  try{
+    if(editingCard){
+      const id = editingCard.dataset.localId;
+      if(id){
+        const photos = await idbGetAll('photos');
+        const saved = photos.find(p=>p.id === id);
+        if(saved){
+          saved.title = title;
+          saved.caption = caption;
+          saved.chapter = chapter;
+          await idbPut('photos',saved);
         }
-      );
-
-
-      const date =
-        document.createElement('span');
-
-      date.className =
-        'card-date';
-
-      date.textContent =
-        chapter === 'event'
-          ? 'EVENT'
-          : chapter;
-
-
-      textWrap.appendChild(titleEl);
-      textWrap.appendChild(captionEl);
-
-      actions.appendChild(editButton);
-
-      textWrap.appendChild(actions);
-
-      info.appendChild(textWrap);
-      info.appendChild(date);
-
-      article.appendChild(img);
-      article.appendChild(info);
-
-      gallery.appendChild(article);
-
-      activateCard(article);
-
-      closeSecureModal(
-        'photoDetailsModal'
-      );
-
-      showUploadToast(
-        'Foto berhasil ditambahkan ke galeri.'
-      );
-
-
-      if(
-        !document
-          .querySelector('.filter.active')
-          .dataset.year === 'all'
-      ){
-        // Filter akan diperbarui oleh pengguna jika diperlukan.
       }
 
+      editingCard.dataset.title = title;
+      editingCard.dataset.caption = caption;
+      editingCard.dataset.year = chapter;
+      editingCard.querySelector('.card-title').textContent = title;
+      editingCard.querySelector('.card-caption').textContent = caption;
+      editingCard.querySelector('.card-date').textContent = chapter==='event'?'EVENT':chapter;
+      editingCard.querySelector('img').alt = title;
 
-      pendingFile = null;
+      closeSecureModal('photoDetailsModal');
+      showUploadToast('Detail foto berhasil disimpan.');
+      editingCard = null;
       authenticated = false;
+      return;
+    }
 
-    };
+    if(!pendingFile) return;
+    const dataUrl = await fileToDataURL(pendingFile);
+    const id = 'photo_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
 
+    await idbPut('photos',{id,title,caption,chapter,dataUrl,createdAt:Date.now()});
+    renderSavedPhoto({id,title,caption,chapter,dataUrl});
 
-  reader.readAsDataURL(
-    pendingFile
-  );
-
+    closeSecureModal('photoDetailsModal');
+    showUploadToast('Foto berhasil disimpan di web ini.');
+    pendingFile = null;
+    authenticated = false;
+  }catch(error){
+    console.error(error);
+    showUploadToast('Gagal menyimpan. Coba lagi.');
+  }
 });
 
+function fileToDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = ()=>reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+function addCardActions(card){
+  if(card.querySelector('.card-actions')) return;
+  const info = card.querySelector('.card-info');
+  if(!info) return;
+  const textWrap = info.querySelector(':scope > div');
+  if(!textWrap) return;
+
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
+
+  const editButton = document.createElement('button');
+  editButton.type='button';
+  editButton.className='card-edit';
+  editButton.textContent='Edit';
+  editButton.addEventListener('click',event=>{
+    event.stopPropagation();
+    requestEdit(card);
+  });
+
+  const deleteButton = document.createElement('button');
+  deleteButton.type='button';
+  deleteButton.className='card-delete';
+  deleteButton.textContent='Hapus';
+  deleteButton.addEventListener('click',event=>{
+    event.stopPropagation();
+    requestDeletePhoto(card);
+  });
+
+  actions.append(editButton,deleteButton);
+  textWrap.appendChild(actions);
+}
+
+function renderSavedPhoto(photo){
+  const article = document.createElement('article');
+  article.className='card';
+  article.dataset.year=photo.chapter;
+  article.dataset.title=photo.title;
+  article.dataset.caption=photo.caption;
+  article.dataset.localId=photo.id;
+  article.innerHTML='';
+
+  const img=document.createElement('img');
+  img.src=photo.dataUrl;
+  img.alt=photo.title;
+
+  const info=document.createElement('div');
+  info.className='card-info';
+  const textWrap=document.createElement('div');
+  const titleEl=document.createElement('div');
+  titleEl.className='card-title';
+  titleEl.textContent=photo.title;
+  const captionEl=document.createElement('div');
+  captionEl.className='card-caption';
+  captionEl.textContent=photo.caption;
+  const date=document.createElement('span');
+  date.className='card-date';
+  date.textContent=photo.chapter==='event'?'EVENT':photo.chapter;
+
+  textWrap.append(titleEl,captionEl);
+  info.append(textWrap,date);
+  article.append(img,info);
+  gallery.appendChild(article);
+  addCardActions(article);
+  activateCard(article);
+}
 
 function requestEdit(card){
-
-  /*
-    Edit juga dilindungi kode khusus.
-  */
-  editingCard = card;
-  pendingFile = null;
-
-  codeError.textContent = '';
-  uploadCode.value = '';
-
-  codeModal.classList.add('show');
-
-  codeForm.dataset.mode =
-    'edit';
-
+  editingCard=card;
+  pendingFile=null;
+  authenticated=false;
+  openCodeModal('edit-photo');
 }
 
+function preparePhotoEdit(){
+  if(!editingCard) return;
+  photoDetailsHeading.textContent='Edit detail foto.';
+  savePhotoDetails.textContent='Simpan perubahan';
+  photoTitle.value=editingCard.dataset.title || '';
+  photoCaption.value=editingCard.dataset.caption || '';
+  photoChapter.value=editingCard.dataset.year || 'event';
+  const existingImg=editingCard.querySelector('img');
+  uploadPreview.src=existingImg.src;
+  uploadPreview.classList.add('show');
+  photoDetailsModal.classList.add('show');
+  setTimeout(()=>{photoTitle.focus();photoTitle.select();},80);
+}
 
-codeForm.addEventListener('submit', event => {
+function requestDeletePhoto(card){
+  editingCard=card;
+  authenticated=false;
+  openCodeModal('delete-photo');
+}
 
-  if(codeForm.dataset.mode !== 'edit'){
+async function deletePhotoAfterCode(){
+  if(!editingCard) return;
+  const id=editingCard.dataset.localId;
+  if(!id){
+    showUploadToast('Foto bawaan website tidak dapat dihapus dari penyimpanan lokal.');
+    editingCard=null;
+    authenticated=false;
     return;
   }
+  if(!confirm('Hapus foto ini dari galeri?')) return;
+  await idbDelete('photos',id);
+  editingCard.remove();
+  editingCard=null;
+  authenticated=false;
+  showUploadToast('Foto berhasil dihapus.');
+}
 
-  event.preventDefault();
+/* ---------------- MEMBERS ---------------- */
 
-  const enteredCode =
-    uploadCode.value.trim();
+function addMemberActions(card,id){
+  if(card.querySelector('.member-delete-wrap')) return;
+  const wrap=document.createElement('div');
+  wrap.className='member-delete-wrap';
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='member-delete';
+  button.textContent='Hapus';
+  button.addEventListener('click',event=>{
+    event.stopPropagation();
+    requestDeleteMember(card,id);
+  });
+  wrap.appendChild(button);
+  card.appendChild(wrap);
+}
 
+function renderSavedMember(member){
+  const card=document.createElement('div');
+  card.className='member';
+  card.dataset.localId=member.id;
 
-  if(
-    enteredCode &&
-    enteredCode === UPLOAD_ACCESS_CODE
-  ){
+  const photo=document.createElement('div');
+  photo.className='member-photo';
+  const img=document.createElement('img');
+  img.src=member.dataUrl;
+  img.alt=member.name;
+  photo.appendChild(img);
 
-    authenticated = true;
+  const info=document.createElement('div');
+  info.className='member-info';
+  const name=document.createElement('div');
+  name.className='member-name';
+  name.textContent=member.name;
+  const role=document.createElement('div');
+  role.className='member-role';
+  role.textContent=member.role;
+  info.append(name,role);
+  card.append(photo,info);
+  memberGrid.appendChild(card);
+  addMemberActions(card,member.id);
+}
 
-    codeError.textContent = '';
-
-    codeModal.classList.remove('show');
-
-    photoDetailsHeading.textContent =
-      'Edit detail foto.';
-
-    savePhotoDetails.textContent =
-      'Simpan perubahan';
-
-    photoTitle.value =
-      editingCard.dataset.title;
-
-    photoCaption.value =
-      editingCard.dataset.caption;
-
-    photoChapter.value =
-      editingCard.dataset.year;
-
-
-    const existingImg =
-      editingCard.querySelector('img');
-
-    uploadPreview.src =
-      existingImg.src;
-
-    uploadPreview.classList.add('show');
-
-
-    photoDetailsModal.classList.add('show');
-
-
-    setTimeout(() => {
-      photoTitle.focus();
-      photoTitle.select();
-    }, 80);
-
+memberPhotoInput.addEventListener('change',()=>{
+  const file=memberPhotoInput.files[0];
+  pendingMemberFile=file || null;
+  if(file){
+    memberPreview.src=URL.createObjectURL(file);
+    memberPreview.classList.add('show');
   }
-
-  else{
-
-    codeError.textContent =
-      'Kode salah. Silakan coba lagi.';
-
-    uploadCode.select();
-
-  }
-
-
-  codeForm.dataset.mode = '';
-
 });
 
+memberDetailsForm.addEventListener('submit',async event=>{
+  event.preventDefault();
+  if(!authenticated || !pendingMemberFile) return;
+
+  const name=memberNameInput.value.trim();
+  const role=memberRoleInput.value.trim();
+  if(!name || !role) return;
+
+  try{
+    const dataUrl=await fileToDataURL(pendingMemberFile);
+    const id='member_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+    const member={id,name,role,dataUrl,createdAt:Date.now()};
+    await idbPut('members',member);
+    renderSavedMember(member);
+    closeSecureModal('memberDetailsModal');
+    showUploadToast('Anggota berhasil ditambahkan.');
+    pendingMemberFile=null;
+    authenticated=false;
+  }catch(error){
+    console.error(error);
+    showUploadToast('Gagal menyimpan anggota.');
+  }
+});
+
+let memberToDelete=null;
+function requestDeleteMember(card,id){
+  memberToDelete={card,id};
+  authenticated=false;
+  openCodeModal('delete-member');
+}
+
+async function deleteMemberAfterCode(){
+  if(!memberToDelete) return;
+  if(!confirm('Hapus anggota ini dari daftar kelas?')) return;
+  await idbDelete('members',memberToDelete.id);
+  memberToDelete.card.remove();
+  memberToDelete=null;
+  authenticated=false;
+  showUploadToast('Anggota berhasil dihapus.');
+}
 
 function showUploadToast(message){
-
-  uploadToast.textContent =
-    message;
-
+  uploadToast.textContent=message;
   uploadToast.classList.add('show');
-
-
-  setTimeout(() => {
-
-    uploadToast.classList.remove(
-      'show'
-    );
-
-  }, 2500);
-
+  setTimeout(()=>uploadToast.classList.remove('show'),2500);
 }
+
+async function loadPersistentContent(){
+  try{
+    await openDatabase();
+    const photos=await idbGetAll('photos');
+    photos.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+    photos.forEach(renderSavedPhoto);
+
+    const members=await idbGetAll('members');
+    members.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+    members.forEach(renderSavedMember);
+
+    refreshCards().forEach(addCardActions);
+  }catch(error){
+    console.error('IndexedDB:',error);
+    showUploadToast('Penyimpanan browser tidak tersedia.');
+  }
+}
+
+/* Kartu bawaan tetap bisa diedit, tetapi edit/hapus selalu minta kode. */
+refreshCards().forEach(addCardActions);
+loadPersistentContent();
 
 
 /* =========================================================
