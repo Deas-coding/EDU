@@ -611,200 +611,6 @@ h2 em{
 
 
 /* =========================================================
-   ADD PHOTO CARD
-========================================================= */
-
-.add-photo-card{
-  break-inside:avoid;
-
-  margin-bottom:18px;
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--accent-light),
-      var(--paper)
-    );
-
-  border:
-    1px dashed
-    var(--accent);
-
-  min-height:230px;
-
-  display:flex;
-
-  align-items:center;
-  justify-content:center;
-
-  text-align:center;
-
-  cursor:pointer;
-
-  transition:.35s;
-}
-
-.add-photo-card:hover{
-  transform:
-    translateY(-6px);
-
-  box-shadow:var(--shadow);
-}
-
-.plus-circle{
-  width:65px;
-  height:65px;
-
-  border-radius:50%;
-
-  background:var(--dark);
-  color:white;
-
-  display:flex;
-
-  align-items:center;
-  justify-content:center;
-
-  font-size:30px;
-
-  margin:
-    auto
-    auto
-    14px;
-
-  transition:.3s;
-}
-
-.add-photo-card:hover
-.plus-circle{
-  background:var(--accent);
-
-  transform:
-    rotate(90deg)
-    scale(1.08);
-}
-
-.add-photo-text strong{
-  display:block;
-
-  font-size:14px;
-
-  margin-bottom:5px;
-}
-
-.add-photo-text span{
-  font-size:11px;
-  color:var(--muted);
-}
-
-
-/* =========================================================
-   LIVE TIME
-========================================================= */
-
-.time-section{
-  background:
-    linear-gradient(
-      135deg,
-      #1e211d,
-      #30382c
-    );
-
-  color:white;
-
-  width:100%;
-  max-width:none;
-
-  margin:0;
-
-  padding:
-    90px
-    max(18px,calc((100% - 1150px)/2));
-}
-
-.time-container{
-  max-width:1150px;
-
-  margin:auto;
-
-  display:grid;
-
-  grid-template-columns:
-    1fr
-    1fr;
-
-  gap:60px;
-
-  align-items:center;
-}
-
-.time-label{
-  text-transform:uppercase;
-
-  font-size:10px;
-
-  letter-spacing:.2em;
-
-  color:#b9c5b1;
-
-  margin-bottom:15px;
-}
-
-.live-time{
-  font-size:
-    clamp(45px,7vw,90px);
-
-  line-height:.9;
-
-  letter-spacing:-.06em;
-
-  font-weight:600;
-}
-
-.live-date{
-  margin-top:18px;
-
-  color:#c8cec3;
-
-  font-size:13px;
-}
-
-.time-card{
-  border:
-    1px solid
-    rgba(255,255,255,.12);
-
-  background:
-    rgba(255,255,255,.05);
-
-  backdrop-filter:
-    blur(15px);
-
-  padding:35px;
-
-  border-radius:8px;
-}
-
-.time-card-title{
-  font-family:
-    'Playfair Display',
-    serif;
-
-  font-size:25px;
-
-  margin-bottom:12px;
-}
-
-.time-card p{
-  color:#bfc5ba;
-
-  line-height:1.7;
-
-  font-size:13px;
-}
-
-
-/* =========================================================
    VIDEO MEMORY
 ========================================================= */
 
@@ -1205,82 +1011,6 @@ h2 em{
 
 
 /* =========================================================
-   TIMELINE
-========================================================= */
-
-.year-grid{
-  display:grid;
-
-  grid-template-columns:
-    repeat(
-      3,
-      1fr
-    );
-
-  gap:15px;
-}
-
-.year{
-  min-height:210px;
-
-  padding:25px;
-
-  background:var(--paper);
-
-  border:
-    1px solid
-    var(--line);
-
-  position:relative;
-
-  overflow:hidden;
-
-  transition:.3s;
-}
-
-.year:hover{
-  transform:
-    translateY(-4px);
-
-  box-shadow:var(--shadow);
-}
-
-.year-number{
-  font-size:70px;
-
-  letter-spacing:-.08em;
-
-  font-weight:700;
-
-  line-height:.9;
-}
-
-.year-name{
-  position:absolute;
-
-  bottom:24px;
-  left:25px;
-
-  font-family:
-    'Playfair Display',
-    serif;
-
-  font-size:23px;
-}
-
-.year-count{
-  position:absolute;
-
-  right:24px;
-  bottom:26px;
-
-  color:var(--muted);
-
-  font-size:11px;
-}
-
-
-/* =========================================================
    ABOUT
 ========================================================= */
 
@@ -1411,4 +1141,1306 @@ footer strong{
 
   cursor:pointer;
 
-  fon
+  font-size:18px;
+}
+
+
+/* =========================================================
+   MUSIC PLAYER
+========================================================= */
+
+.music-player{
+  position:fixed;
+
+  left:22px;
+  bottom:22px;
+
+  z-index:800;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  padding:
+    8px
+    14px
+    8px
+    8px;
+
+  background:
+    rgba(255,253,248,.90);
+
+  border:
+    1px solid
+    rgba(255,255,255,.8);
+
+  backdrop-filter:
+    blur(16px);
+
+  border-radius:100px;
+
+  box-shadow:
+    0 10px 30px
+    rgba(0,0,0,.12);
+}
+
+.music-btn{
+  width:42px;
+  height:42px;
+
+  border:0;
+
+  border-radius:50%;
+
+  background:var(--dark);
+
+  color:white;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  font-size:13px;
+
+  transition:.3s ease;
+}
+
+.music-btn:hover{
+  transform:scale(1.08);
+
+  background:var(--accent);
+}
+
+.music-btn.playing{
+  background:var(--accent);
+
+  animation:
+    musicPulse
+    1.6s
+    infinite;
+}
+
+@keyframes musicPulse{
+  0%,100%{
+    box-shadow:
+      0 0 0 0
+      rgba(123,143,104,.25);
+  }
+
+  50%{
+    box-shadow:
+      0 0 0 9px
+      rgba(123,143,104,0);
+  }
+}
+
+.music-info{
+  display:flex;
+
+  flex-direction:column;
+
+  gap:2px;
+
+  padding-right:5px;
+}
+
+.music-info span{
+  font-size:8px;
+
+  letter-spacing:.15em;
+
+  color:var(--muted);
+}
+
+.music-info strong{
+  font-size:11px;
+
+  font-weight:600;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:850px){
+
+  .hero-inner{
+    grid-template-columns:1fr;
+    gap:40px;
+  }
+
+  .member-grid{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+  .instagram-section{
+    grid-template-columns:1fr;
+  }
+
+  .confess-box{
+    grid-template-columns:1fr;
+    gap:35px;
+  }
+
+  .time-container{
+    grid-template-columns:1fr;
+  }
+
+  .about-box{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:760px){
+
+  nav{
+    top:10px;
+  }
+
+  .navlinks{
+    display:none;
+  }
+
+  .hero{
+    padding-top:115px;
+    min-height:auto;
+  }
+
+  .hero-photo{
+    height:420px;
+    width:88%;
+    margin:auto;
+  }
+
+  .hero-label{
+    left:-15px;
+  }
+
+  .section-head{
+    display:block;
+  }
+
+  .section-desc{
+    margin-top:15px;
+  }
+
+  section{
+    padding:65px 0;
+  }
+
+  .member-grid{
+    grid-template-columns:
+      repeat(2,1fr);
+
+    gap:10px;
+  }
+
+  .member{
+    padding:7px;
+  }
+
+  .video-caption{
+    display:block;
+  }
+
+  .video-caption span{
+    display:block;
+    margin-top:5px;
+  }
+
+  .instagram-card{
+    padding:30px;
+  }
+
+  .confess-box{
+    padding:30px 22px;
+  }
+
+  .music-player{
+    left:14px;
+    bottom:14px;
+  }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================= -->
+
+<nav>
+
+  <a
+    class="brand"
+    href="#">
+
+    <span class="brand-dot"></span>
+
+    English Education Archive
+
+  </a>
+
+
+  <div class="navlinks">
+
+    <a href="#gallery">
+      Gallery
+    </a>
+
+    <a href="#video">
+      Video
+    </a>
+
+    <a href="#members">
+      Members
+    </a>
+
+    <a href="#about">
+      About
+    </a>
+
+  </div>
+
+
+  <button
+    class="nav-btn"
+    onclick="document.getElementById('gallery').scrollIntoView()">
+
+    View memories ↗
+
+  </button>
+
+</nav>
+
+
+
+<main>
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<header class="hero">
+
+  <div class="hero-inner">
+
+    <div>
+
+      <div class="eyebrow">
+        Class archive
+      </div>
+
+
+      <h1>
+
+        Little moments,<br>
+
+        <em>
+          big memories.
+        </em>
+
+      </h1>
+
+
+      <p class="hero-copy">
+
+        Sebuah ruang kecil untuk menyimpan foto, video, cerita,
+        dan tawa yang kita lewati selama masa sekolah.
+        Karena ada kenangan yang terlalu berharga jika hanya
+        berakhir di galeri HP.
+
+      </p>
+
+
+      <div class="hero-meta">
+
+        <span class="pill">
+          📷 120+ memories
+        </span>
+
+        <span class="pill">
+          ♡ made with nostalgia
+        </span>
+
+        <span class="pill">
+          EDU 1 A · Class Archive
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="hero-photo">
+
+      <div class="tape"></div>
+
+      <img
+        src="GAMBAR/514485.jpg"
+        alt="School memory">
+
+      <div class="hero-label">
+
+        one chapter,<br>
+        many stories.
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- LIVE CLOCK — HERO -->
+  <div class="hero-clock" aria-label="Jam dan tanggal saat ini">
+    <div class="hero-clock-orbit"></div>
+    <div class="hero-clock-top"><span class="hero-clock-dot"></span><span>LIVE MOMENT</span></div>
+    <div class="hero-clock-time" id="liveTime">00:00:00</div>
+    <div class="hero-clock-date" id="liveDate">Loading...</div>
+    <div class="hero-clock-line"><span></span><i></i><span></span></div>
+  </div>
+
+
+  <div class="scroll-note">
+    scroll to remember ↓
+  </div>
+
+</header>
+
+
+
+<!-- =========================================================
+     GALLERY (PHOTO DUMP - 6 FOTO TEMPLATE)
+========================================================= -->
+
+<section
+  id="gallery"
+  class="reveal">
+
+  <div class="section-head">
+
+    <div>
+
+      <div class="section-kicker">
+        01 / the collection
+      </div>
+
+      <h2>
+
+        Photo dump,<br>
+
+        <em>
+          but make it meaningful.
+        </em>
+
+      </h2>
+
+    </div>
+
+
+    <p class="section-desc">
+
+      Pilih chapter untuk melihat potongan-potongan kecil
+      dari perjalanan kelas kita.
+
+    </p>
+
+  </div>
+
+
+  <div class="timeline">
+
+    <button
+      class="filter active"
+      data-year="all">
+
+      All memories
+
+    </button>
+
+
+    <button
+      class="filter"
+      data-year="X">
+
+      Chapter 1
+
+    </button>
+
+
+    <button
+      class="filter"
+      data-year="XI">
+
+      Chapter 2
+
+    </button>
+
+
+    <button
+      class="filter"
+      data-year="XII">
+
+      Chapter 3
+
+    </button>
+
+
+    <button
+      class="filter"
+      data-year="event">
+
+      Events
+
+    </button>
+
+  </div>
+
+
+  <div
+    class="gallery"
+    id="galleryGrid">
+
+
+    <!-- FOTO 1 -->
+    <article
+      class="card"
+      data-year="X"
+      data-title="First Day Class"
+      data-caption="Awal mula perjalanan kita bersama di kelas English Education.">
+
+      <img
+        src="GAMBAR/514485.jpg"
+        alt="First Day Class">
+
+      <div class="card-info">
+        <div>
+          <div class="card-title">First Day Class</div>
+          <div class="card-caption">Awal mula perjalanan kita bersama di kelas English Education.</div>
+        </div>
+        <span class="card-date">Chapter 1</span>
+      </div>
+
+    </article>
+
+
+    <!-- FOTO 2 -->
+    <article
+      class="card"
+      data-year="XI"
+      data-title="Study Together"
+      data-caption="Momen diskusi kelompok dan pengerjaan tugas bersama.">
+
+      <img
+        src="GAMBAR/A1.jpg"
+        alt="Study Together">
+
+      <div class="card-info">
+        <div>
+          <div class="card-title">Study Together</div>
+          <div class="card-caption">Momen diskusi kelompok dan pengerjaan tugas bersama.</div>
+        </div>
+        <span class="card-date">Chapter 2</span>
+      </div>
+
+    </article>
+
+
+    <!-- FOTO 3 -->
+    <article
+      class="card"
+      data-year="XII"
+      data-title="Campus Life"
+      data-caption="Suasana santai di lorong kampus setelah jam kuliah selesai.">
+
+      <img
+        src="GAMBAR/A3.jpg"
+        alt="Campus Life">
+
+      <div class="card-info">
+        <div>
+          <div class="card-title">Campus Life</div>
+          <div class="card-caption">Suasana santai di lorong kampus setelah jam kuliah selesai.</div>
+        </div>
+        <span class="card-date">Chapter 3</span>
+      </div>
+
+    </article>
+
+
+    <!-- FOTO 4 -->
+    <article
+      class="card"
+      data-year="event"
+      data-title="Class Gathering"
+      data-caption="Foto kebersamaan saat acara kumpul kelas dan refreshing.">
+
+      <img
+        src="GAMBAR/A4.jpg"
+        alt="Class Gathering">
+
+      <div class="card-info">
+        <div>
+          <div class="card-title">Class Gathering</div>
+          <div class="card-caption">Foto kebersamaan saat acara kumpul kelas dan refreshing.</div>
+        </div>
+        <span class="card-date">EVENT</span>
+      </div>
+
+    </article>
+
+
+    <!-- FOTO 5 -->
+    <article
+      class="card"
+      data-year="XI"
+      data-title="Random Moments"
+      data-caption="Canda tawa dan potongan cerita kecil yang tak terlupakan.">
+
+      <img
+        src="GAMBAR/A5.jpg"
+        alt="Random Moments">
+
+      <div class="card-info">
+        <div>
+          <div class="card-title">Random Moments</div>
+          <div class="card-caption">Canda tawa dan potongan cerita kecil yang tak terlupakan.</div>
+        </div>
+        <span class="card-date">Chapter 2</span>
+      </div>
+
+    </article>
+
+
+    <!-- FOTO 6 -->
+    <article
+      class="card"
+      data-year="event"
+      data-title="Special Event"
+      data-caption="Momen perayaan hari penting bersama teman-teman sekelas.">
+
+      <img
+        src="GAMBAR/A6.jpg"
+        alt="Special Event">
+
+      <div class="card-info">
+        <div>
+          <div class="card-title">Special Event</div>
+          <div class="card-caption">Momen perayaan hari penting bersama teman-teman sekelas.</div>
+        </div>
+        <span class="card-date">EVENT</span>
+      </div>
+
+    </article>
+
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     VIDEO MEMORY
+========================================================= -->
+
+<section
+  id="video"
+  class="video-section reveal">
+
+  <div class="section-head">
+
+    <div>
+
+      <div class="section-kicker">
+        02 / moving memories
+      </div>
+
+      <h2>
+
+        Memories,<br>
+
+        <em>in motion.</em>
+
+      </h2>
+
+    </div>
+
+
+    <p class="section-desc">
+
+      Bukan hanya foto.
+      Simpan juga momen-momen yang lebih hidup
+      dalam bentuk video.
+
+    </p>
+
+  </div>
+
+
+  <div class="video-wrapper">
+
+    <video
+      controls
+      preload="metadata"
+      poster="GAMBAR/Screenshot 2026-10-03 083106.png">
+
+      <source
+        src="MULTIMEDIA/512473.mp4"
+        type="video/mp4">
+
+      Browser kamu tidak mendukung video.
+
+    </video>
+
+
+    <div class="video-caption">
+
+      <strong>
+        Our Class — The Memory Film
+      </strong>
+
+      <span>
+        press play & remember
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     MEMBERS
+========================================================= -->
+
+<section
+  id="members"
+  class="reveal">
+
+  <div class="section-head">
+
+    <div>
+
+      <div class="section-kicker">
+        03 / people
+      </div>
+
+      <h2>
+
+        The people<br>
+
+        <em>behind the memories.</em>
+
+      </h2>
+
+    </div>
+
+
+    <p class="section-desc">
+
+      Setiap orang punya cerita sendiri.
+      Tapi semuanya menjadi satu ketika berada
+      di kelas yang sama.
+
+    </p>
+
+  </div>
+
+
+  <div class="member-grid" id="memberGrid">
+
+    <!-- MEMBER 1 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/515281.jpg" alt="Sri Mulyani">
+      </div>
+      <div class="member-info">
+        <div class="member-name">SRI MULYANI</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 2 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/wl.jpg" alt="Wulan Nurwidiawati">
+      </div>
+      <div class="member-info">
+        <div class="member-name">WULAN NURWIDIAWATI</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 3 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/al.jpg" alt="Allica Retalita R">
+      </div>
+      <div class="member-info">
+        <div class="member-name">ALLICA RETALITA R</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 4 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/515282.jpg" alt="Nazwa El Sabrin">
+      </div>
+      <div class="member-info">
+        <div class="member-name">NAZWA EL SABRIN</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 5 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/515283.jpg" alt="Piyara Prasiska N">
+      </div>
+      <div class="member-info">
+        <div class="member-name">PIYARA PRASISKA N</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 6 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/515284.jpg" alt="Khanza Leofira A">
+      </div>
+      <div class="member-info">
+        <div class="member-name">KHANZA LEOFIRA A</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 7 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/sk.jpg" alt="Sesi Kaila">
+      </div>
+      <div class="member-info">
+        <div class="member-name">SESI KAILA</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 8 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/in.jpg" alt="Ineke Febri">
+      </div>
+      <div class="member-info">
+        <div class="member-name">INEKE FEBRI</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 9 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/sla.jpg" alt="Salsa K.N">
+      </div>
+      <div class="member-info">
+        <div class="member-name">SALSA K.N</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 10 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/rg.jpg" alt="Reggia">
+      </div>
+      <div class="member-info">
+        <div class="member-name">REGGIA</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 11 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/kh.jpg" alt="Ingrid">
+      </div>
+      <div class="member-info">
+        <div class="member-name">INGRID</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 12 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/NZZ.jpg" alt="Nazwa Hanifah">
+      </div>
+      <div class="member-info">
+        <div class="member-name">NAZWA HANIFAH</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+    <!-- MEMBER 13 -->
+    <div class="member">
+      <div class="member-photo">
+        <img src="GAMBAR/DDF.jpg" alt="Deas Nugraha">
+      </div>
+      <div class="member-info">
+        <div class="member-name">DEAS NUGRAHA</div>
+        <div class="member-role">Classmate</div>
+      </div>
+    </div>
+
+  </div> 
+
+</section>
+
+
+<!-- =========================================================
+     INSTAGRAM
+========================================================= -->
+
+<section class="reveal">
+
+  <div class="instagram-section">
+
+
+    <div class="instagram-card">
+
+      <div>
+
+        <div class="instagram-kicker">
+          stay connected
+        </div>
+
+        <div class="instagram-title">
+
+          Our<br>
+          Instagram.
+
+        </div>
+
+        <div class="instagram-handle">
+          @ENGLISHEDUCATION_HU
+        </div>
+
+      </div>
+
+
+      <a
+        class="instagram-btn"
+        href="https://www.instagram.com/englisheducation_hu/"
+        target="_blank"
+        rel="noopener">
+
+        Follow our memories ↗
+
+      </a>
+
+    </div>
+
+
+    <div class="insta-grid">
+
+      <img
+        src="GAMBAR/A3.jpg"
+        alt="Instagram memory">
+
+      <img
+        src="GAMBAR/A4.jpg"
+        alt="Instagram memory">
+
+      <img
+        src="GAMBAR/A5.jpg"
+        alt="Instagram memory">
+
+      <img
+        src="GAMBAR/A6.jpg"
+        alt="Instagram memory">
+
+      <img
+        src="GAMBAR/A7.jpg"
+        alt="Instagram memory">
+
+      <img
+        src="GAMBAR/A1.jpg"
+        alt="Instagram memory">
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     CONFESSION
+========================================================= -->
+
+<section class="reveal">
+
+  <div class="section-head">
+
+    <div>
+
+      <div class="section-kicker">
+        04 / say something
+      </div>
+
+      <h2>
+
+        Send a<br>
+
+        <em>confession.</em>
+
+      </h2>
+
+    </div>
+
+
+    <p class="section-desc">
+
+      Ada sesuatu yang ingin disampaikan?
+      Tulis pesan, cerita, atau kalimat yang
+      belum pernah kamu sampaikan.
+
+    </p>
+
+  </div>
+
+
+  <div class="confess-box">
+
+
+    <div>
+
+      <div class="confess-title">
+
+        Maybe<br>
+        someone<br>
+        needs to hear it.
+
+      </div>
+
+
+      <p class="confess-desc">
+
+        Kalian bisa mengirim pesan secara anonim.
+        Tekan tombol di bawah untuk menuju
+        halaman confession.
+
+      </p>
+
+    </div>
+
+
+    <!-- CONFESSION FORM -->
+
+    <form
+      class="confess-form"
+      id="confessForm"
+      action="https://confess.ngl.link/englisheducation_hu"
+      method="get"
+      target="_blank">
+
+
+      <button
+        class="confess-btn"
+        type="submit">
+
+        Kirim Confession ↗
+
+      </button>
+
+
+      <div class="confess-note">
+
+        Setelah menekan tombol, kamu akan
+        diarahkan ke halaman ngl.
+
+      </div>
+
+
+    </form>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     ABOUT
+========================================================= -->
+
+<section
+  id="about"
+  class="reveal">
+
+  <div class="about-box">
+
+
+    <div class="about-big">
+
+      Not just<br>
+
+      <em>photos.</em>
+
+    </div>
+
+
+    <div class="about-text">
+
+      Website ini dibuat sebagai kapsul waktu digital —
+      tempat untuk kembali kapan pun kita ingin mengingat
+      versi diri kita yang pernah ada di kampus.
+
+      <br><br>
+
+      Foto mungkin akan tersimpan.
+      Video mungkin akan tetap ada.
+      Tetapi yang paling penting adalah cerita
+      di balik semuanya.
+
+      <br><br>
+
+      <strong>
+
+        One class. Hundreds of moments.
+        One story worth remembering.
+
+      </strong>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer>
+
+  <p>
+
+    Made for the memories ·
+
+    <strong>
+      English Education · archive
+    </strong>
+
+    · 2026-2030
+
+  </p>
+
+</footer>
+
+
+
+<!-- =========================================================
+     IMAGE MODAL
+========================================================= -->
+
+<div
+  class="modal"
+  id="modal">
+
+  <div class="modal-box">
+
+    <button
+      class="close"
+      id="close">
+
+      ×
+
+    </button>
+
+
+    <img
+      id="modalImg"
+      src=""
+      alt="">
+
+
+    <div
+      class="modal-caption"
+      id="modalCaption">
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     MUSIC PLAYER
+========================================================= -->
+
+<div class="music-player">
+
+  <button
+    id="musicBtn"
+    class="music-btn"
+    aria-label="Play or pause music">
+
+    <span id="musicIcon">
+      ▶
+    </span>
+
+  </button>
+
+
+  <div class="music-info">
+
+    <span id="musicStatus">
+      MUSIC OFF
+    </span>
+
+    <strong>
+      Young Dumb & Broke ♫
+    </strong>
+
+  </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     AUDIO
+========================================================= -->
+
+<audio
+  id="bgMusic"
+  loop>
+
+  <source
+    src="MULTIMEDIA/rr.mp3"
+    type="audio/mpeg">
+
+</audio>
+
+
+
+<script>
+/* =========================================================
+   1. FILTER GALLERY
+========================================================= */
+const filters = document.querySelectorAll('.filter');
+const galleryCards = document.querySelectorAll('.card');
+
+filters.forEach(filter => {
+  filter.addEventListener('click', () => {
+    filters.forEach(f => f.classList.remove('active'));
+    filter.classList.add('active');
+
+    const year = filter.dataset.year;
+
+    galleryCards.forEach(card => {
+      card.style.display = (year === 'all' || card.dataset.year === year) ? 'inline-block' : 'none';
+    });
+  });
+});
+
+/* =========================================================
+   2. IMAGE MODAL
+========================================================= */
+const modal = document.getElementById('modal');
+const modalImg = document.getElementById('modalImg');
+const modalCaption = document.getElementById('modalCaption');
+const close = document.getElementById('close');
+
+galleryCards.forEach(card => {
+  card.addEventListener('click', () => {
+    const img = card.querySelector('img');
+    modalImg.src = img.src;
+    modalImg.alt = img.alt;
+    modalCaption.textContent = card.dataset.title + ' — ' + card.dataset.caption;
+    modal.classList.add('show');
+  });
+});
+
+function closeModal(){
+  modal.classList.remove('show');
+}
+
+close.addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if(e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+/* =========================================================
+   3. LIVE CLOCK
+========================================================= */
+const liveTime = document.getElementById('liveTime');
+const liveDate = document.getElementById('liveDate');
+
+function updateClock(){
+  const now = new Date();
+  liveTime.textContent = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
+  liveDate.textContent = now.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+/* =========================================================
+   4. MUSIC PLAYER & REVEAL
+========================================================= */
+const music = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicBtn');
+const musicIcon = document.getElementById('musicIcon');
+const musicStatus = document.getElementById('musicStatus');
+
+musicBtn.addEventListener('click', () => {
+  if(music.paused){
+    music.play().then(() => {
+      musicIcon.textContent = 'Ⅱ';
+      musicStatus.textContent = 'MUSIC ON';
+      musicBtn.classList.add('playing');
+    });
+  } else {
+    music.pause();
+    musicIcon.textContent = '▶';
+    musicStatus.textContent = 'MUSIC OFF';
+    musicBtn.classList.remove('playing');
+  }
+});
+
+const revealElements = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold:.12 });
+
+revealElements.forEach(element => revealObserver.observe(element));
+</script>
+
+</body>
+</html>
