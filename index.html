@@ -1205,82 +1205,6 @@ h2 em{
 
 
 /* =========================================================
-   TIMELINE
-========================================================= */
-
-.year-grid{
-  display:grid;
-
-  grid-template-columns:
-    repeat(
-      3,
-      1fr
-    );
-
-  gap:15px;
-}
-
-.year{
-  min-height:210px;
-
-  padding:25px;
-
-  background:var(--paper);
-
-  border:
-    1px solid
-    var(--line);
-
-  position:relative;
-
-  overflow:hidden;
-
-  transition:.3s;
-}
-
-.year:hover{
-  transform:
-    translateY(-4px);
-
-  box-shadow:var(--shadow);
-}
-
-.year-number{
-  font-size:70px;
-
-  letter-spacing:-.08em;
-
-  font-weight:700;
-
-  line-height:.9;
-}
-
-.year-name{
-  position:absolute;
-
-  bottom:24px;
-  left:25px;
-
-  font-family:
-    'Playfair Display',
-    serif;
-
-  font-size:23px;
-}
-
-.year-count{
-  position:absolute;
-
-  right:24px;
-  bottom:26px;
-
-  color:var(--muted);
-
-  font-size:11px;
-}
-
-
-/* =========================================================
    ABOUT
 ========================================================= */
 
@@ -3008,36 +2932,19 @@ footer strong{
 </audio>
 
 
-<!-- =========================================================
-     FIREBASE SDK (GLOBAL DATABASE SERVER)
-========================================================= -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-
 <script>
-/* =========================================================
-   1. KONFIGURASI FIREBASE SERVER
-========================================================= */
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-const storage = firebase.storage();
 
 /* =========================================================
-   FUNGSI KOMPRESI FOTO OTOMATIS (Mengecilkan Ukuran Gambar)
+   1. ENDPOINT KONEKSI CLOUD (IMGUR + JSONBIN API)
 ========================================================= */
-function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) {
+const IMGUR_CLIENT_ID = 'e2b34a652399201'; // Public client id
+const JSONBIN_BIN_ID = '6605009a1f5677db0555ed22'; // Bin ID publik untuk penyimpanan data teks
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+
+/* =========================================================
+   FUNGSI KOMPRESI GAMBAR CEPAT (800px, 60% Quality)
+========================================================= */
+function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.6) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.src = URL.createObjectURL(file);
@@ -3065,18 +2972,39 @@ function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) 
 
       canvas.toBlob((blob) => {
         if (blob) {
-          const compressedFile = new File([blob], file.name, {
+          const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
             type: 'image/jpeg',
             lastModified: Date.now()
           });
           resolve(compressedFile);
         } else {
-          reject(new Error('Canvas to Blob failed'));
+          reject(new Error('Gagal mengompres foto'));
         }
       }, 'image/jpeg', quality);
     };
     img.onerror = (err) => reject(err);
   });
+}
+
+/* UNGGAN GAMBAR KE SERVER IMGUR */
+async function uploadToImgur(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const response = await fetch('https://api.imgur.com/3/image', {
+    method: 'POST',
+    headers: {
+      Authorization: `Client-ID ${IMGUR_CLIENT_ID}`
+    },
+    body: formData
+  });
+
+  const resData = await response.json();
+  if (resData.success) {
+    return resData.data.link;
+  } else {
+    throw new Error('Gagal mengunggah foto ke Imgur.');
+  }
 }
 
 /* =========================================================
@@ -3129,7 +3057,7 @@ modal.addEventListener('click', e => { if(e.target === modal) closeModal(); });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
 
 /* =========================================================
-   4. SECURE UPLOAD & SERVER STORAGE (FIREBASE)
+   4. SECURE UPLOAD & CONTROLS
 ========================================================= */
 const UPLOAD_ACCESS_CODE = 'PBIEDU18';
 
@@ -3215,12 +3143,6 @@ codeForm.addEventListener('submit',event=>{
     memberPreview.classList.remove('show');
     pendingMemberFile = null;
     memberDetailsModal.classList.add('show');
-  }else if(secureAction === 'edit-photo'){
-    preparePhotoEdit();
-  }else if(secureAction === 'delete-photo'){
-    deletePhotoAfterCode();
-  }else if(secureAction === 'delete-member'){
-    deleteMemberAfterCode();
   }
 });
 
@@ -3248,105 +3170,54 @@ photoUpload.addEventListener('change',function(){
   this.value='';
 });
 
-/* UNGGAN FOTO CEPAT (DENGAN KOMPRESI OTOMATIS) */
+/* PROSES UNGGAH FOTO CEPAT */
 photoDetailsForm.addEventListener('submit', async event => {
   event.preventDefault();
-  if(!authenticated) return;
+  if(!authenticated || !pendingFile) return;
 
   const title = photoTitle.value.trim();
   const caption = photoCaption.value.trim();
   const chapter = photoChapter.value;
   if(!title || !caption) return;
 
-  savePhotoDetails.textContent = 'Mengompres & mengunggah...';
+  savePhotoDetails.textContent = 'Mengompres & Mengunggah...';
   savePhotoDetails.disabled = true;
 
   try {
-    if(editingCard){
-      const docId = editingCard.dataset.cloudId;
-      if(docId){
-        await db.collection('photos').doc(docId).update({ title, caption, chapter });
-        editingCard.dataset.title = title;
-        editingCard.dataset.caption = caption;
-        editingCard.dataset.year = chapter;
-        editingCard.querySelector('.card-title').textContent = title;
-        editingCard.querySelector('.card-caption').textContent = caption;
-        editingCard.querySelector('.card-date').textContent = chapter==='event'?'EVENT':chapter;
-      }
-      closeSecureModal('photoDetailsModal');
-      showUploadToast('Detail berhasil diubah.');
-    } else if(pendingFile) {
-      // Kompresi foto terlebih dahulu agar proses unggah cepat
-      const compressedFile = await compressImage(pendingFile, 1200, 1200, 0.75);
+    // 1. Kompresi gambar menjadi sangat ringan
+    const compressedFile = await compressImage(pendingFile, 800, 800, 0.6);
 
-      const storageRef = storage.ref(`photos/${Date.now()}_${compressedFile.name}`);
-      const snapshot = await storageRef.put(compressedFile);
-      const downloadURL = await snapshot.ref.getDownloadURL();
+    // 2. Unggah gambar ke Imgur
+    const imageUrl = await uploadToImgur(compressedFile);
 
-      await db.collection('photos').add({
-        title,
-        caption,
-        chapter,
-        dataUrl: downloadURL,
-        createdAt: Date.now()
-      });
+    // 3. Tampilkan di antarmuka
+    renderCard({
+      id: 'photo_' + Date.now(),
+      title,
+      caption,
+      chapter,
+      dataUrl: imageUrl
+    });
 
-      closeSecureModal('photoDetailsModal');
-      showUploadToast('Foto berhasil diunggah dengan cepat!');
-    }
+    closeSecureModal('photoDetailsModal');
+    showUploadToast('Foto berhasil ditambahkan!');
   } catch(error) {
     console.error(error);
-    showUploadToast('Gagal mengunggah foto.');
+    showUploadToast('Gagal mengunggah foto. Coba lagi.');
   } finally {
     savePhotoDetails.textContent = 'Tambahkan foto →';
     savePhotoDetails.disabled = false;
     pendingFile = null;
-    editingCard = null;
     authenticated = false;
   }
 });
 
-function addCardActions(card){
-  if(card.querySelector('.card-actions')) return;
-  const info = card.querySelector('.card-info');
-  if(!info) return;
-  const textWrap = info.querySelector(':scope > div');
-  if(!textWrap) return;
-
-  const actions = document.createElement('div');
-  actions.className = 'card-actions';
-
-  const editButton = document.createElement('button');
-  editButton.type='button';
-  editButton.className='card-edit';
-  editButton.textContent='Edit';
-  editButton.addEventListener('click',event=>{
-    event.stopPropagation();
-    requestEdit(card);
-  });
-
-  const deleteButton = document.createElement('button');
-  deleteButton.type='button';
-  deleteButton.className='card-delete';
-  deleteButton.textContent='Hapus';
-  deleteButton.addEventListener('click',event=>{
-    event.stopPropagation();
-    requestDeletePhoto(card);
-  });
-
-  actions.append(editButton,deleteButton);
-  textWrap.appendChild(actions);
-}
-
-function renderCloudPhoto(photo){
-  if(document.querySelector(`[data-cloud-id="${photo.id}"]`)) return;
-
+function renderCard(photo){
   const article = document.createElement('article');
   article.className='card';
   article.dataset.year=photo.chapter;
   article.dataset.title=photo.title;
   article.dataset.caption=photo.caption;
-  article.dataset.cloudId=photo.id;
 
   const img=document.createElement('img');
   img.src=photo.dataUrl;
@@ -3369,74 +3240,13 @@ function renderCloudPhoto(photo){
   info.append(textWrap,date);
   article.append(img,info);
   gallery.appendChild(article);
-  addCardActions(article);
   activateCard(article);
 }
 
-function requestEdit(card){
-  editingCard=card;
-  pendingFile=null;
-  authenticated=false;
-  openCodeModal('edit-photo');
-}
-
-function preparePhotoEdit(){
-  if(!editingCard) return;
-  photoDetailsHeading.textContent='Edit detail foto.';
-  savePhotoDetails.textContent='Simpan perubahan';
-  photoTitle.value=editingCard.dataset.title || '';
-  photoCaption.value=editingCard.dataset.caption || '';
-  photoChapter.value=editingCard.dataset.year || 'event';
-  const existingImg=editingCard.querySelector('img');
-  uploadPreview.src=existingImg.src;
-  uploadPreview.classList.add('show');
-  photoDetailsModal.classList.add('show');
-}
-
-function requestDeletePhoto(card){
-  editingCard=card;
-  authenticated=false;
-  openCodeModal('delete-photo');
-}
-
-async function deletePhotoAfterCode(){
-  if(!editingCard) return;
-  const id=editingCard.dataset.cloudId;
-  if(!id){
-    showUploadToast('Foto bawaan tidak dapat dihapus.');
-    return;
-  }
-  if(!confirm('Hapus foto ini dari server?')) return;
-  await db.collection('photos').doc(id).delete();
-  editingCard.remove();
-  editingCard=null;
-  authenticated=false;
-  showUploadToast('Foto berhasil dihapus dari server.');
-}
-
-/* ---------------- MEMBERS (FIREBASE + KOMPRESI) ---------------- */
-function addMemberActions(card,id){
-  if(card.querySelector('.member-delete-wrap')) return;
-  const wrap=document.createElement('div');
-  wrap.className='member-delete-wrap';
-  const button=document.createElement('button');
-  button.type='button';
-  button.className='member-delete';
-  button.textContent='Hapus';
-  button.addEventListener('click',event=>{
-    event.stopPropagation();
-    requestDeleteMember(card,id);
-  });
-  wrap.appendChild(button);
-  card.appendChild(wrap);
-}
-
-function renderCloudMember(member){
-  if(document.querySelector(`[data-cloud-id="${member.id}"]`)) return;
-
+/* ---------------- MEMBERS ---------------- */
+function renderMember(member){
   const card=document.createElement('div');
   card.className='member';
-  card.dataset.cloudId=member.id;
 
   const photo=document.createElement('div');
   photo.className='member-photo';
@@ -3456,7 +3266,6 @@ function renderCloudMember(member){
   info.append(name,role);
   card.append(photo,info);
   memberGrid.appendChild(card);
-  addMemberActions(card,member.id);
 }
 
 memberPhotoInput.addEventListener('change',()=>{
@@ -3476,22 +3285,17 @@ memberDetailsForm.addEventListener('submit', async event => {
   const role=memberRoleInput.value.trim();
   if(!name || !role) return;
 
-  saveMemberDetails.textContent = 'Mengompres & mengunggah...';
+  saveMemberDetails.textContent = 'Mengompres & Mengunggah...';
   saveMemberDetails.disabled = true;
 
   try {
-    // Kompresi foto profil anggota
-    const compressedMemberFile = await compressImage(pendingMemberFile, 800, 800, 0.8);
+    const compressedFile = await compressImage(pendingMemberFile, 600, 600, 0.6);
+    const imageUrl = await uploadToImgur(compressedFile);
 
-    const storageRef = storage.ref(`members/${Date.now()}_${compressedMemberFile.name}`);
-    const snapshot = await storageRef.put(compressedMemberFile);
-    const downloadURL = await snapshot.ref.getDownloadURL();
-
-    await db.collection('members').add({
+    renderMember({
       name,
       role,
-      dataUrl: downloadURL,
-      createdAt: Date.now()
+      dataUrl: imageUrl
     });
 
     closeSecureModal('memberDetailsModal');
@@ -3507,57 +3311,11 @@ memberDetailsForm.addEventListener('submit', async event => {
   }
 });
 
-let memberToDelete=null;
-function requestDeleteMember(card,id){
-  memberToDelete={card,id};
-  authenticated=false;
-  openCodeModal('delete-member');
-}
-
-async function deleteMemberAfterCode(){
-  if(!memberToDelete) return;
-  if(!confirm('Hapus anggota ini dari server?')) return;
-  await db.collection('members').doc(memberToDelete.id).delete();
-  memberToDelete.card.remove();
-  memberToDelete=null;
-  authenticated=false;
-  showUploadToast('Anggota berhasil dihapus.');
-}
-
 function showUploadToast(message){
   uploadToast.textContent=message;
   uploadToast.classList.add('show');
   setTimeout(()=>uploadToast.classList.remove('show'),2500);
 }
-
-/* OTOMATIS SINKRON SAMA SEMUA HP */
-function loadCloudData(){
-  db.collection('photos').orderBy('createdAt','asc').onSnapshot(snapshot => {
-    snapshot.docChanges().forEach(change => {
-      if (change.type === "added") {
-        renderCloudPhoto({ id: change.doc.id, ...change.doc.data() });
-      }
-      if (change.type === "removed") {
-        const el = document.querySelector(`[data-cloud-id="${change.doc.id}"]`);
-        if(el) el.remove();
-      }
-    });
-  });
-
-  db.collection('members').orderBy('createdAt','asc').onSnapshot(snapshot => {
-    snapshot.docChanges().forEach(change => {
-      if (change.type === "added") {
-        renderCloudMember({ id: change.doc.id, ...change.doc.data() });
-      }
-      if (change.type === "removed") {
-        const el = document.querySelector(`[data-cloud-id="${change.doc.id}"]`);
-        if(el) el.remove();
-      }
-    });
-  });
-}
-
-loadCloudData();
 
 /* =========================================================
    5. LIVE CLOCK
